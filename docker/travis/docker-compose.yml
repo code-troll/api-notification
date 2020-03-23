@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  app:
+    image: "${DOCKER_IMAGE_NAME}:${DEV_VERSION}_dev"
+    depends_on:
+      - memcache
+    networks:
+      - memcache
+    volumes:
+      - ../../src/:/app/src/
+      - ../../scripts:/app/scripts
+      - ../../app/conf:/app/conf
+
+  memcache:
+    image: memcached:1.4
+    networks:
+      - memcache
+
+networks:
+  memcache:

@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  app:
+    image: "${DOCKER_IMAGE_NAME}:${DEV_VERSION}_dev"
+    command: /app/run.sh
+    ports:
+      - "8087:8080"
+      - "8788:8787" # use this for debugging the web application
+      - "5006:5005" # use this to debug tests by running mvn -Dmaven.surefire.debug test
+    environment:
+      TERM: xterm
+    volumes:
+      - ../../src/:/app/src/
+      - ../../app/conf:/app/conf
+      - ../../app/deployment:/app/deployment
+      - ../../app/log:/app/log
+      - ../../scripts:/app/scripts
+    env_file:
+      - ./build.env
+    networks:
+      - memcache
+
+  memcache:
+    image: memcached:1.4
+    networks:
+      - memcache
+
+networks:
+  memcache:

@@ -1,0 +1,42 @@
+{
+    "variables": {
+        "deployable_version": "{{env `DEPLOYABLE_VERSION`}}",
+        "git_version": "{{env `GIT_VERSION`}}",
+        "prod_version": "{{env `PROD_VERSION`}}_prod",
+        "docker_image_name": "{{env `DOCKER_IMAGE_NAME`}}",
+        "maven_s3_bucket": "{{ env `PENNEO_MVN_S3_BUCKET` }}"
+    },
+    "builders": [
+        {
+            "type": "docker",
+            "image": "{{user `docker_image_name`}}:{{user `prod_version`}}",
+            "commit": true,
+            "pull": false
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell-local",
+            "command": "PENNEO_MVN_S3_BUCKET={{user `maven_s3_bucket`}} {{template_dir}}/build_artifacts.sh"
+        },
+        {
+            "type": "file",
+            "source": "{{template_dir}}/../../app/deployment/",
+            "destination": "/app/deployment"
+        }
+    ],
+    "post-processors": [
+        {
+            "type": "docker-tag",
+            "repository": "{{user `docker_image_name`}}",
+            "tag": "{{user `git_version`}}",
+            "force": false
+        },
+        {
+            "type": "docker-tag",
+            "repository": "registry.penneo.com/{{user `docker_image_name`}}",
+            "tag": "{{user `deployable_version`}}",
+            "force": false
+        }
+    ]
+}

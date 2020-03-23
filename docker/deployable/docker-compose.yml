@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  app:
+    image: "${APP_DOCKER_IMAGE}"
+    command: /app/run.sh
+    ports:
+      - "${APP_PORT}:8080"
+    volumes:
+      - "${APP_CONF_DIR}:/app/conf"
+    networks:
+      - memcache
+
+  memcache:
+    image: memcached:1.4
+    networks:
+      - memcache
+
+networks:
+  memcache:

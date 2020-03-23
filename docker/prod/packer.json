@@ -1,0 +1,35 @@
+{
+    "variables": {
+        "prod_version": "{{env `PROD_VERSION`}}_prod",
+        "docker_image_name": "{{env `DOCKER_IMAGE_NAME`}}"
+    },
+    "builders": [
+        {
+            "type": "docker",
+            "image": "registry.penneo.com/penneo/openjdk:8-alpine",
+            "commit": true,
+            "pull": false
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "file",
+            "source": "{{template_dir}}/files",
+            "destination": "/app"
+        },
+        {
+            "type": "shell",
+            "script": "{{template_dir}}/provision.sh"
+        }
+    ],
+    "post-processors": [
+        [
+            {
+                "type": "docker-tag",
+                "repository": "{{user `docker_image_name`}}",
+                "tag": "{{user `prod_version`}}",
+                "force": false
+            }
+        ]
+    ]
+}
