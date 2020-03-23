@@ -1,0 +1,3 @@
+[submodule "project-runner"]
+	path = project-runner
+	url = git@github.com:Penneo/project-runner.git
